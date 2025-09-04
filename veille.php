@@ -1,16 +1,25 @@
 <?php
 use PHPMailer\PHPMailer\PHPMailer;
 use GuzzleHttp\Client;
+use Dotenv\Dotenv;
 
 require __DIR__ . '/vendor/autoload.php';
 
+// ===== 0. Charger le .env =====
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
 // ===== CONFIG =====
-$openaiApiKey = getenv("OPENAI_API_KEY"); // ta clé OpenAI (stockée en secret)
-$smtpUser     = "veillejulianolim@gmail.com"; // expéditeur
-$smtpPass     = getenv("lnmo yppy dbuq"); // mot de passe application Gmail (secret)
+$openaiApiKey = $_ENV['OPENAI_API_KEY'];
+$smtpUser     = $_ENV['SMTP_USER'];
+$smtpPass     = $_ENV['SMTP_PASS'];
 $smtpHost     = "smtp.gmail.com";
 $smtpPort     = 587;
-$toEmail      = "julianolimoan@gmail.com"; // destinataire
+$toEmail      = $_ENV['TO_EMAIL'];
+
+if (!$openaiApiKey || !$smtpUser || !$smtpPass || !$toEmail) {
+    die("❌ Une ou plusieurs variables d'environnement manquent.\n");
+}
 
 // ===== 1. Générer la veille via OpenAI =====
 $client = new Client([
@@ -29,7 +38,7 @@ Inclure toujours :
 3) Concept JavaScript moderne avec exemple.
 4) Nouveauté framework (Laravel/Symfony).
 5) Un petit exercice pratique (PHP/SQL/JS).
-6) Concept théorique de base sur interface,container,services, design patern ...
+6) Concept théorique de base sur interface, container, services, design pattern ...
 
 Format : HTML lisible pour email.
 EOT;
