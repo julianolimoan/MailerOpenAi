@@ -1,0 +1,25 @@
+name: Veille Dev
+
+on:
+  schedule:
+    - cron: "0 18 * * *" # 20h Paris = 18h UTC
+  workflow_dispatch:
+
+jobs:
+  send-mail:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+      - name: Install deps
+        run: composer install --no-interaction --prefer-dist
+      - name: Run veille
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          TO_EMAIL: ${{ secrets.TO_EMAIL }}
+        run: php veille.php
