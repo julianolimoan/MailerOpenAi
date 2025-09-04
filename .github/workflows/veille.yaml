@@ -1,21 +1,30 @@
 name: Veille Dev
 
+# Déclenche le workflow tous les jours à 20h Paris (18h UTC)
 on:
   schedule:
-    - cron: "0 18 * * *" # 20h Paris = 18h UTC
-  workflow_dispatch:
+    - cron: "0 18 * * *"
+  workflow_dispatch: # permet de lancer manuellement depuis GitHub
 
 jobs:
   send-mail:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+
     steps:
+      # Récupère le code du repo
       - uses: actions/checkout@v3
+
+      # Installe PHP 8.4
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.4"
+
+      # Installe Composer et dépendances
       - name: Install deps
         run: composer install --no-interaction --prefer-dist
+
+      # Exécute le script PHP de veille
       - name: Run veille
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
